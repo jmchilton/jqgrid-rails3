@@ -656,7 +656,11 @@ module JqgridJson
       each do |elem|
         elem.id ||= index(elem)
         json << %Q({"id":"#{elem.id}","cell":[)
-        couples = elem.attributes.symbolize_keys
+        if elem.is_a? Hash
+          couples = elem
+        else 
+          couples = elem.attributes.symbolize_keys
+        end
         attributes.each do |atr|
           value = get_atr_value(elem, atr, couples)
           value = escape_json(value) if value and value.is_a? String
@@ -715,7 +719,7 @@ module JqgridJson
     when Proc
       value.call(record)
     else
-      value
+      _resolve_value(value.to_sym, record)
     end
   end
   def get_nested_atr_value(elem, hierarchy)
